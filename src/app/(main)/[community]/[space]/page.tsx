@@ -11,6 +11,9 @@ import { EventCard } from '@/components/events/EventCard'
 import { CourseView } from '@/components/courses/CourseView'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderOpen } from 'lucide-react'
+import { getResources } from '@/lib/actions/resources'
+import { ResourceUpload } from '@/components/resources/ResourceUpload'
+import { ResourceList } from '@/components/resources/ResourceList'
 
 interface SpacePageProps {
   params: Promise<{
@@ -158,32 +161,25 @@ export default async function SpacePage({ params }: SpacePageProps) {
 
   // Resources spaces - show files/resources
   if (space.spaceType === 'resources') {
+    const resources = await getResources(space.id)
+
     return (
       <div className="h-full flex flex-col">
-        <div className="border-b p-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            {space.emoji && <span className="text-3xl">{space.emoji}</span>}
-            {space.name}
-          </h1>
-          {space.description && (
-            <p className="text-sm text-muted-foreground mt-1">{space.description}</p>
-          )}
+        <div className="border-b p-4 flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              {space.emoji && <span className="text-3xl">{space.emoji}</span>}
+              {space.name}
+            </h1>
+            {space.description && (
+              <p className="text-sm text-muted-foreground mt-1">{space.description}</p>
+            )}
+          </div>
+          <ResourceUpload spaceId={space.id} />
         </div>
         <div className="flex-1 overflow-auto p-4">
           <div className="max-w-4xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FolderOpen className="h-5 w-5" />
-                  Resources
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-center py-8">
-                  No resources uploaded yet. File uploads require R2 storage configuration.
-                </p>
-              </CardContent>
-            </Card>
+            <ResourceList resources={resources} />
           </div>
         </div>
       </div>
