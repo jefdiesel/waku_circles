@@ -174,7 +174,7 @@ export async function getPosts(spaceId: string): Promise<PostWithAuthor[]> {
 /**
  * Get a single post with all details
  */
-export async function getPost(postId: string) {
+export async function getPost(postId: string): Promise<PostWithAuthor | null> {
   const post = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     with: {
@@ -191,7 +191,7 @@ export async function getPost(postId: string) {
     },
   });
 
-  return post;
+  return post as PostWithAuthor | null;
 }
 
 /**
