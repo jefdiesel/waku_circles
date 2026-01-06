@@ -3,8 +3,8 @@ import { WakuProvider } from '@/components/waku/WakuProvider'
 import { db, communities, spaces } from '@/lib/db'
 import { eq, and } from 'drizzle-orm'
 
-// This is a placeholder - in a real app, you'd determine the community from the route
-const DEMO_COMMUNITY_SLUG = 'demo'
+// Default community slug
+const DEFAULT_COMMUNITY_SLUG = 'home'
 
 async function getCommunityAndSpaces(communitySlug: string) {
   try {
@@ -45,11 +45,11 @@ export default async function MainLayout({
 }: {
   children: React.ReactNode
 }) {
-  const { community, spaces: communitySpaces } = await getCommunityAndSpaces(DEMO_COMMUNITY_SLUG)
+  const { community, spaces: communitySpaces } = await getCommunityAndSpaces(DEFAULT_COMMUNITY_SLUG)
 
   return (
     <WakuProvider>
-      <AppShell communitySlug={DEMO_COMMUNITY_SLUG} spaces={communitySpaces}>
+      <AppShell communitySlug={DEFAULT_COMMUNITY_SLUG} spaces={communitySpaces}>
         {children}
       </AppShell>
     </WakuProvider>

@@ -8,6 +8,7 @@ import { getCourse } from '@/lib/actions/courses'
 import { PostCard } from '@/components/posts/PostCard'
 import { NewPostButton } from '@/components/posts/NewPostButton'
 import { EventCard } from '@/components/events/EventCard'
+import { NewEventButton } from '@/components/events/NewEventButton'
 import { CourseView } from '@/components/courses/CourseView'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FolderOpen } from 'lucide-react'
@@ -135,14 +136,17 @@ export default async function SpacePage({ params }: SpacePageProps) {
 
     return (
       <div className="h-full flex flex-col">
-        <div className="border-b p-4">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            {space.emoji && <span className="text-3xl">{space.emoji}</span>}
-            {space.name}
-          </h1>
-          {space.description && (
-            <p className="text-sm text-muted-foreground mt-1">{space.description}</p>
-          )}
+        <div className="border-b p-4 flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              {space.emoji && <span className="text-3xl">{space.emoji}</span>}
+              {space.name}
+            </h1>
+            {space.description && (
+              <p className="text-sm text-muted-foreground mt-1">{space.description}</p>
+            )}
+          </div>
+          <NewEventButton spaceId={space.id} />
         </div>
         <div className="flex-1 overflow-auto p-4">
           <div className="max-w-4xl mx-auto space-y-4">

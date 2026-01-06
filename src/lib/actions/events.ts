@@ -160,6 +160,51 @@ export async function rsvpToEvent(
 }
 
 /**
+ * Create a new event
+ */
+export async function createEvent(
+  spaceId: string,
+  data: {
+    title: string;
+    description: string | null;
+    eventType: "online" | "in_person" | "livestream";
+    location: string | null;
+    startsAt: Date;
+    endsAt: Date | null;
+    capacity: number | null;
+  }
+) {
+  const user = await currentUser();
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const profile = await getProfileByClerkId(user.id);
+  if (!profile) {
+    throw new Error("Profile not found");
+  }
+
+  const [event] = await db
+    .insert(events)
+    .values({
+      spaceId,
+      hostId: profile.id,
+      title: data.title,
+      description: data.description,
+      eventType: data.eventType,
+      location: data.location,
+      startsAt: data.startsAt,
+      endsAt: data.endsAt,
+      capacity: data.capacity,
+      isPublished: true,
+    })
+    .returning();
+
+  revalidatePath("/[community]/[space]");
+  return event;
+}
+
+/**
  * Remove RSVP from an event
  */
 export async function removeRsvp(eventId: string) {

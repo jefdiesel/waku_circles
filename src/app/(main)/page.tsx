@@ -9,5 +9,5 @@ export default async function MainPage() {
   }
 
   // Redirect to default community
-  redirect('/demo')
+  redirect('/home')
 }
