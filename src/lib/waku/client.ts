@@ -3,7 +3,6 @@ import { Protocols, type IEncoder, type IDecoder } from '@waku/interfaces'
 
 let wakuNode: Awaited<ReturnType<typeof createLightNode>> | null = null
 
-// Wrapper functions for encoder/decoder with type bypass
 export function createEncoder(options: { contentTopic: string }): IEncoder {
   return (sdkCreateEncoder as any)({
     contentTopic: options.contentTopic,
@@ -19,12 +18,9 @@ export async function getWakuNode() {
     return wakuNode
   }
 
-  // Create a Light Node on mainnet
+  // Mainnet cluster ID is 1, testnet is 0
   wakuNode = await createLightNode({
-    networkConfig: {
-      clusterId: 1,
-      shards: [0, 1, 2, 3, 4, 5, 6, 7],
-    },
+    networkConfig: { clusterId: 1 } as any,
     defaultBootstrap: true,
   })
 
@@ -34,12 +30,12 @@ export async function getWakuNode() {
     await Promise.race([
       waitForRemotePeer(wakuNode, [Protocols.LightPush, Protocols.Filter]),
       new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Peer connection timeout')), 30000)
+        setTimeout(() => reject(new Error('Timeout')), 30000)
       ),
     ])
-    console.log('Waku mainnet node connected')
+    console.log('Waku mainnet connected')
   } catch (error) {
-    console.warn('Waku peer connection warning:', error)
+    console.warn('Waku:', error)
   }
 
   return wakuNode
