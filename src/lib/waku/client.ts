@@ -1,33 +1,25 @@
+// Waku client is now handled by waku-trollbox package
+// This file kept for backwards compatibility with DirectMessage component
+
 import { createLightNode, waitForRemotePeer } from '@waku/sdk'
 import { Protocols } from '@waku/interfaces'
-import { createEncoder as createProtoEncoder, createDecoder as createProtoDecoder } from '@waku/core'
 
 let wakuNode: Awaited<ReturnType<typeof createLightNode>> | null = null
 
-// Mainnet pubsub topic for cluster 1, shard 0
-const PUBSUB_TOPIC = '/waku/2/rs/1/0'
-
 export function createEncoder(options: { contentTopic: string }) {
-  return (createProtoEncoder as any)({
-    contentTopic: options.contentTopic,
-    pubsubTopic: PUBSUB_TOPIC,
-  })
+  // Stub - Trollbox handles this now
+  return { contentTopic: options.contentTopic } as any
 }
 
 export function createDecoder(contentTopic: string) {
-  return (createProtoDecoder as any)(contentTopic, PUBSUB_TOPIC)
+  // Stub - Trollbox handles this now
+  return { contentTopic } as any
 }
 
 export async function getWakuNode() {
-  if (wakuNode) {
-    return wakuNode
-  }
+  if (wakuNode) return wakuNode
 
-  wakuNode = await createLightNode({
-    pubsubTopics: [PUBSUB_TOPIC],
-    defaultBootstrap: true,
-  })
-
+  wakuNode = await createLightNode({ defaultBootstrap: true })
   await wakuNode.start()
 
   try {
@@ -35,9 +27,8 @@ export async function getWakuNode() {
       waitForRemotePeer(wakuNode, [Protocols.LightPush, Protocols.Filter]),
       new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 30000)),
     ])
-    console.log('Waku connected')
-  } catch (error) {
-    console.warn('Waku peer warning:', error)
+  } catch (e) {
+    console.warn('Waku:', e)
   }
 
   return wakuNode
