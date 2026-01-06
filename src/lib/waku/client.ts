@@ -1,16 +1,21 @@
-import { createLightNode, waitForRemotePeer, createEncoder as sdkCreateEncoder, createDecoder as sdkCreateDecoder } from '@waku/sdk'
-import { Protocols, type IEncoder, type IDecoder } from '@waku/interfaces'
+import { createLightNode, waitForRemotePeer } from '@waku/sdk'
+import { Protocols } from '@waku/interfaces'
+import { createEncoder as createProtoEncoder, createDecoder as createProtoDecoder } from '@waku/core'
 
 let wakuNode: Awaited<ReturnType<typeof createLightNode>> | null = null
 
-export function createEncoder(options: { contentTopic: string }): IEncoder {
-  return (sdkCreateEncoder as any)({
+// Mainnet pubsub topic for cluster 1, shard 0
+const PUBSUB_TOPIC = '/waku/2/rs/1/0'
+
+export function createEncoder(options: { contentTopic: string }) {
+  return (createProtoEncoder as any)({
     contentTopic: options.contentTopic,
+    pubsubTopic: PUBSUB_TOPIC,
   })
 }
 
-export function createDecoder(contentTopic: string): IDecoder<any> {
-  return (sdkCreateDecoder as any)(contentTopic)
+export function createDecoder(contentTopic: string) {
+  return (createProtoDecoder as any)(contentTopic, PUBSUB_TOPIC)
 }
 
 export async function getWakuNode() {
@@ -18,9 +23,8 @@ export async function getWakuNode() {
     return wakuNode
   }
 
-  // Mainnet cluster ID is 1, testnet is 0
   wakuNode = await createLightNode({
-    networkConfig: { clusterId: 1 } as any,
+    pubsubTopics: [PUBSUB_TOPIC],
     defaultBootstrap: true,
   })
 
@@ -29,13 +33,11 @@ export async function getWakuNode() {
   try {
     await Promise.race([
       waitForRemotePeer(wakuNode, [Protocols.LightPush, Protocols.Filter]),
-      new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Timeout')), 30000)
-      ),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 30000)),
     ])
-    console.log('Waku mainnet connected')
+    console.log('Waku connected')
   } catch (error) {
-    console.warn('Waku:', error)
+    console.warn('Waku peer warning:', error)
   }
 
   return wakuNode
