@@ -1,7 +1,13 @@
 import { redirect } from 'next/navigation'
+import { currentUser } from '@clerk/nextjs/server'
 
-export default function MainPage() {
-  // Redirect to a default community
-  // In a real app, you'd show a community selector or redirect to the user's last viewed community
+export default async function MainPage() {
+  const user = await currentUser()
+
+  if (!user) {
+    redirect('/sign-in')
+  }
+
+  // Redirect to default community
   redirect('/demo')
 }
