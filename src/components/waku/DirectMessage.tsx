@@ -70,7 +70,7 @@ export function DirectMessage({
         setIsLoadingHistory(true)
 
         // Subscribe to new messages via Filter protocol
-        const { subscription } = await node.filter.subscribe([decoder], (msg: IDecodedMessage) => {
+        const unsubscribe = await node.filter.subscribe([decoder], (msg: IDecodedMessage) => {
           const payload = msg.payload
           const decoded = decodeMessage(payload)
           if (decoded) {
@@ -78,7 +78,9 @@ export function DirectMessage({
           }
         })
 
-        subscriptionRef.current = () => subscription.unsubscribe([decoder])
+        subscriptionRef.current = typeof unsubscribe === 'function'
+          ? unsubscribe
+          : () => { /* noop if subscription format changed */ }
 
         // Fetch historical messages via Store protocol
         try {

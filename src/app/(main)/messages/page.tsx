@@ -57,7 +57,7 @@ export default async function MessagesPage() {
                       <AvatarFallback>
                         {user.fullName
                           ?.split(' ')
-                          .map((n) => n[0])
+                          .map((n: string) => n[0])
                           .join('')
                           .toUpperCase() || user.username?.[0]?.toUpperCase() || '?'}
                       </AvatarFallback>

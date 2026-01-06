@@ -47,7 +47,7 @@ export async function createComment(
   }
 
   // Create comment
-  const [comment] = await db
+  const result = await db
     .insert(comments)
     .values({
       postId,
@@ -55,7 +55,8 @@ export async function createComment(
       authorId: profile.id,
       content,
     })
-    .returning();
+    .returning() as { id: string; postId: string }[];
+  const comment = result[0];
 
   // Increment post comment count
   await incrementPostComments(postId);

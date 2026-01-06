@@ -63,7 +63,7 @@ export function ChatRoom({ spaceId, currentUserId }: ChatRoomProps) {
         console.log('Setting up message subscription for space:', spaceId)
 
         // Subscribe to new messages via Filter protocol
-        const { subscription } = await node.filter.subscribe([decoder], (msg: IDecodedMessage) => {
+        const unsubscribe = await node.filter.subscribe([decoder], (msg: IDecodedMessage) => {
           const decoded = decodeMessage(msg.payload)
           if (decoded) {
             addMessage(decoded)
@@ -71,7 +71,9 @@ export function ChatRoom({ spaceId, currentUserId }: ChatRoomProps) {
         })
 
         // Store unsubscribe function for cleanup
-        subscriptionRef.current = () => subscription.unsubscribe([decoder])
+        subscriptionRef.current = typeof unsubscribe === 'function'
+          ? unsubscribe
+          : () => { /* noop if subscription format changed */ }
 
         // Fetch historical messages via Store protocol
         try {

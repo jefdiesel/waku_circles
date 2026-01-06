@@ -92,7 +92,7 @@ export const subscriptionStatusEnum = pgEnum("subscription_status", [
 // TABLES
 // ============================================================================
 
-// Communities
+// Communities - ownerId FK is defined in relations to avoid circular reference
 export const communities = pgTable("communities", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -101,7 +101,7 @@ export const communities = pgTable("communities", {
   logoUrl: text("logo_url"),
   coverUrl: text("cover_url"),
   brandColor: text("brand_color").default("#6366f1"),
-  ownerId: uuid("owner_id").references(() => profiles.id),
+  ownerId: uuid("owner_id"),
   settings: jsonb("settings"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
 });
@@ -188,7 +188,7 @@ export const comments = pgTable("comments", {
   postId: uuid("post_id")
     .references(() => posts.id, { onDelete: "cascade" })
     .notNull(),
-  parentId: uuid("parent_id").references(() => comments.id), // For nested replies
+  parentId: uuid("parent_id"), // Self-reference for nested replies (FK in relations)
   authorId: uuid("author_id")
     .references(() => profiles.id)
     .notNull(),

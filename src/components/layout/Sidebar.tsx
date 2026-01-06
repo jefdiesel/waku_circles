@@ -11,7 +11,7 @@ interface Space {
   id: string
   name: string
   slug: string
-  emoji?: string
+  emoji?: string | null
   spaceType: string
 }
 

@@ -132,7 +132,7 @@ export async function getReactions(
       orderBy: (reactions, { desc }) => [desc(reactions.createdAt)],
     });
 
-    return { success: true, reactions: targetReactions };
+    return { success: true, reactions: targetReactions as any };
   } catch (error) {
     console.error("Error fetching reactions:", error);
     return { success: false, error: "Failed to fetch reactions" };

@@ -1,10 +1,21 @@
-import { createLightNode, waitForRemotePeer, createEncoder, createDecoder } from '@waku/sdk'
+import { createLightNode, waitForRemotePeer, createEncoder as sdkCreateEncoder, createDecoder as sdkCreateDecoder } from '@waku/sdk'
 import { Protocols } from '@waku/interfaces'
 
 let wakuNode: Awaited<ReturnType<typeof createLightNode>> | null = null
 
-// Export encoder/decoder creators for use in components
-export { createEncoder, createDecoder }
+// Default pubsub topic for OpenCircle
+const DEFAULT_PUBSUB_TOPIC = '/waku/2/default-waku/proto'
+
+// Wrapper functions that provide encoder/decoder with required options
+export function createEncoder(options: { contentTopic: string }) {
+  return sdkCreateEncoder({
+    contentTopic: options.contentTopic,
+  } as any) // Type assertion needed due to SDK version differences
+}
+
+export function createDecoder(contentTopic: string) {
+  return (sdkCreateDecoder as any)(contentTopic) // Type assertion for SDK compatibility
+}
 
 export async function getWakuNode() {
   if (wakuNode) {

@@ -177,7 +177,7 @@ export async function getPostsBySpace(
     conditions.push(eq(posts.isPinned, false));
   }
 
-  return await db.query.posts.findMany({
+  const result = await db.query.posts.findMany({
     where: and(...conditions),
     with: {
       author: {
@@ -194,13 +194,14 @@ export async function getPostsBySpace(
     limit,
     offset,
   });
+  return result as unknown as PostWithAuthor[];
 }
 
 /**
  * Get single post with full details (author, comments, etc.)
  */
 export async function getPostById(postId: string): Promise<PostWithDetails | undefined> {
-  return await db.query.posts.findFirst({
+  const result = await db.query.posts.findFirst({
     where: eq(posts.id, postId),
     with: {
       author: true,
@@ -234,6 +235,7 @@ export async function getPostById(postId: string): Promise<PostWithDetails | und
       },
     },
   });
+  return result as PostWithDetails | undefined;
 }
 
 /**
@@ -403,10 +405,10 @@ export async function getCourseWithContent(courseId: string) {
       modules: {
         with: {
           lessons: {
-            orderBy: (lessons, { asc }) => [asc(lessons.sortOrder)],
+            orderBy: (lessons: any, { asc }: any) => [asc(lessons.sortOrder)],
           },
         },
-        orderBy: (modules, { asc }) => [asc(modules.sortOrder)],
+        orderBy: (modules: any, { asc }: any) => [asc(modules.sortOrder)],
       },
     },
   });

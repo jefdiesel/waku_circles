@@ -8,6 +8,7 @@
  */
 
 import { db } from "./index";
+import { eq } from "drizzle-orm";
 import {
   communities,
   membershipTiers,
@@ -128,7 +129,7 @@ async function seed() {
   await db
     .update(communities)
     .set({ ownerId: profiles_created[0].id })
-    .where({ id: community.id });
+    .where(eq(communities.id, community.id));
 
   // Create spaces
   const spaceData = [

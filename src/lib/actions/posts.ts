@@ -191,7 +191,7 @@ export async function getPost(postId: string): Promise<PostWithAuthor | null> {
     },
   });
 
-  return post as PostWithAuthor | null;
+  return post as unknown as PostWithAuthor | null;
 }
 
 /**
