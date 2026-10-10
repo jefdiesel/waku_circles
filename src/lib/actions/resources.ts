@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { files } from "@/lib/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { currentUser } from "@clerk/nextjs/server";
-import { del } from "@vercel/blob";
+import { del } from "@/lib/blob";
 import { getProfileByClerkId } from "@/lib/db/queries";
 import { revalidatePath } from "next/cache";
 
@@ -84,7 +84,7 @@ export async function deleteResource(fileId: string) {
     throw new Error("Unauthorized");
   }
 
-  // Delete from Vercel Blob
+  // Delete from R2 (was Vercel Blob)
   await del(file.r2Url);
 
   // Delete from database

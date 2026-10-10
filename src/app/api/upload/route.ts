@@ -1,4 +1,4 @@
-import { put } from '@vercel/blob'
+import { put } from '@/lib/blob'
 import { NextResponse } from 'next/server'
 import { currentUser } from '@clerk/nextjs/server'
 import { db } from '@/lib/db'
@@ -28,10 +28,8 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 })
   }
 
-  // Upload to Vercel Blob
-  const blob = await put(file.name, file, {
-    access: 'public',
-  })
+  // Upload to R2 (was Vercel Blob)
+  const blob = await put(file.name, file)
 
   // Save file metadata to database
   const [savedFile] = await db
